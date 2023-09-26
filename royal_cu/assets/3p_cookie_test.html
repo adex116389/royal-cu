@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)https://www.digitalinsight.com/3p_cookie_test.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><script>
+    /**
+     * IE8 event support.
+     * @param {Node} elem Live node.
+     * @param {string} evnt Event to listen for
+     * @param {Object} listen Handler function
+     * @param {boolean} bub Sets useCapture (prefer false).
+     */
+    function _addEventListener(elem, evnt, listen, bub) {
+        var bubble = bub || false;
+        if (!elem) return;
+        if (elem.addEventListener) {
+            elem.addEventListener(evnt, listen, bubble);
+        } else {
+            elem.attachEvent('on' + evnt, listen, bubble);
+        }
+    }
+
+    /**
+     * Test for 3rd party cookies via iframe + postMessage.
+     * @param {Object} e Event object.
+     */
+    function testCookie() {
+        var domain = 'domain=' + window.location.domain  + ';';
+        var name = 'testCookie';
+        var value = 'test';
+        setCookie(name, value);
+        var source = (window.location != window.parent.location) ?
+                document.referrer: document.location;
+        if (document.cookie.indexOf(name) >= 0) {
+            window.parent.postMessage('3rdPCookie=true', source);
+        } else {
+            window.parent.postMessage('3rdPCookie=false', source);
+        }
+        clearCookie(name);
+    }
+
+    /**
+     * Remove cookie by setting expiration to the past.
+     * @param {string} name Name of cookie.
+     * @param {boolean} expire Expire cookie or not.
+     */
+    function clearCookie(name, expire) {
+        if (expire) {
+            document.cookie = name + '=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        } else {
+            document.cookie = '';
+        }
+    }
+
+    /**
+     * Create a cookie that expires in number of seconds
+     * @param {string} name Name of cookie.
+     * @param {string} value Value of cookie.
+     * @param {number} seconds Number of seconds.
+     */
+    function setCookie(name, value, seconds) {
+        var date = new Date();
+        date.setTime(date.getTime() + (seconds || 30 * 1000));
+        var expires = seconds ? '; expires=' + date.toGMTString() :  '';
+        document.cookie = name + '=' + value + expires + '; path=/';
+    }
+
+    // Call testCookie onload.
+    window.onload = function () {
+        testCookie();
+    };
+</script></head><body></body></html>
